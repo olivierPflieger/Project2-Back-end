@@ -39,10 +39,5 @@ public class UserController {
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unable to generate a token for this user");
         }
-        //String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
-        //Map<String, String> body = Map.of(
-        //        "token", jwtToken
-        //);
-        //return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 }
