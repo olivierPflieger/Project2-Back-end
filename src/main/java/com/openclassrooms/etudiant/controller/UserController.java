@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -29,9 +31,18 @@ public class UserController {
 
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
-        return ResponseEntity.ok(jwtToken);
+
+        try {
+            String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
+            return ResponseEntity.ok(Map.of("token", jwtToken));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unable to generate a token for this user");
+        }
+        //String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
+        //Map<String, String> body = Map.of(
+        //        "token", jwtToken
+        //);
+        //return ResponseEntity.status(HttpStatus.OK).body(body);
     }
-
-
 }
