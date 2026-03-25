@@ -20,6 +20,18 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
 
+    public StudentDTO findById(long id) {
+        return studentRepository.findById(id)
+                .map(student -> {
+                    StudentDTO studentDTO = new StudentDTO();
+                    studentDTO.setId(student.getId());
+                    studentDTO.setFirstName(student.getFirstName());
+                    studentDTO.setLastName(student.getLastName());
+                    return studentDTO;
+                })
+                .orElse(null);
+    }
+
     public List<StudentDTO> findAll() {
         return studentRepository.findAll()
                 .stream()

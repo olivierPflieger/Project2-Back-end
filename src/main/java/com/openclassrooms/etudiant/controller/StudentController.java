@@ -24,6 +24,12 @@ public class StudentController {
     private final CreateStudentDtoMapper createStudentDtoMapper;
     private final UpdateStudentDtoMapper updateStudentDtoMapper;
 
+    @GetMapping("/api/students/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        StudentDTO student = studentService.findById(id);
+        return ResponseEntity.ok(student);
+    }
+
     @GetMapping("/api/students")
     public ResponseEntity<?> findAll() {
         List<StudentDTO> students = studentService.findAll();
@@ -36,13 +42,13 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/api/student/{id}")
+    @PutMapping("/api/students/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UpdateStudentDTO updateStudentDTO) {
         studentService.update(id, updateStudentDtoMapper.toEntity(updateStudentDTO));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/student/{id}")
+    @DeleteMapping("/api/students/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         studentService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
