@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +38,14 @@ public class Student {
     @NotBlank
     @Column(name = "lastName", nullable = false)
     private String lastName;
+
+    @Email
+    @Column(name="email", nullable = false, unique = true)
+    private String email;
+
+    @Past
+    @Column(name="birthDate", nullable = false)
+    private LocalDate birthDate;
 
     @CreationTimestamp
     @Column(name = "created_at")

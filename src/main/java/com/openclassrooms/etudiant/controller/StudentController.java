@@ -11,9 +11,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -37,13 +39,27 @@ public class StudentController {
     }
 
     @PostMapping("/api/students")
-    public ResponseEntity<?> create(@Valid @RequestBody CreateStudentDTO createStudentDTO) {
+    public ResponseEntity<?> create(@Valid @RequestBody CreateStudentDTO createStudentDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
+        }
         studentService.create(createStudentDtoMapper.toEntity(createStudentDTO));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/api/students/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UpdateStudentDTO updateStudentDTO) {
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody UpdateStudentDTO updateStudentDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors);
+        }
         studentService.update(id, updateStudentDtoMapper.toEntity(updateStudentDTO));
         return new ResponseEntity<>(HttpStatus.OK);
     }

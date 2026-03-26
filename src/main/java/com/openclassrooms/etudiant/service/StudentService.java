@@ -27,6 +27,8 @@ public class StudentService {
                     studentDTO.setId(student.getId());
                     studentDTO.setFirstName(student.getFirstName());
                     studentDTO.setLastName(student.getLastName());
+                    studentDTO.setEmail(student.getEmail());
+                    studentDTO.setBirthDate(student.getBirthDate());
                     return studentDTO;
                 })
                 .orElse(null);
@@ -40,6 +42,8 @@ public class StudentService {
                     studentDTO.setId(student.getId());
                     studentDTO.setFirstName(student.getFirstName());
                     studentDTO.setLastName(student.getLastName());
+                    studentDTO.setEmail(student.getEmail());
+                    studentDTO.setBirthDate(student.getBirthDate());
                     return studentDTO;
                 })
                 .toList();
@@ -47,6 +51,11 @@ public class StudentService {
 
     public void create(Student student) {
         Assert.notNull(student, "Student must not be null");
+        Assert.notNull(student.getFirstName(), "FirstName must not be null");
+        Assert.notNull(student.getLastName(), "LastName must not be null");
+        Assert.notNull(student.getEmail(), "Email must not be null");
+        Assert.notNull(student.getBirthDate(), "Birthdate must not be null");
+
         studentRepository.save(student);
     }
 
@@ -54,12 +63,16 @@ public class StudentService {
         Assert.notNull(id, "id must not be null");
         Assert.notNull(student.getFirstName(), "FirstName must not be null");
         Assert.notNull(student.getLastName(), "LastName must not be null");
+        Assert.notNull(student.getEmail(), "Email must not be null");
+        Assert.notNull(student.getBirthDate(), "Birthdate must not be null");
 
         Student studentToUpdate = studentRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Student not found"));;
 
         studentToUpdate.setFirstName(student.getFirstName());
         studentToUpdate.setLastName(student.getLastName());
+        studentToUpdate.setEmail(student.getEmail());
+        studentToUpdate.setBirthDate(student.getBirthDate());
         studentRepository.save(studentToUpdate);
     }
 
