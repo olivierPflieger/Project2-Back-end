@@ -29,7 +29,11 @@ public class StudentController {
     @GetMapping("/api/students/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         StudentDTO student = studentService.findById(id);
-        return ResponseEntity.ok(student);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(student);
+        }
     }
 
     @GetMapping("/api/students")
