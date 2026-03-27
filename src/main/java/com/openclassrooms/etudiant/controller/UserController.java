@@ -37,7 +37,7 @@ public class UserController {
             return ResponseEntity.ok(Map.of("token", jwtToken));
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unable to generate a token for this user");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Login or password incorrect");
         }
     }
 }
