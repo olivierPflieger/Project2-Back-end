@@ -31,7 +31,7 @@ public class StudentService {
                     studentDTO.setBirthDate(student.getBirthDate());
                     return studentDTO;
                 })
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 
     public List<StudentDTO> findAll() {

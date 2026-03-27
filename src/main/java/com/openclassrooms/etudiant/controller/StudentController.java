@@ -28,11 +28,11 @@ public class StudentController {
 
     @GetMapping("/api/students/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
-        StudentDTO student = studentService.findById(id);
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        } else {
+        try {
+            StudentDTO student = studentService.findById(id);
             return ResponseEntity.ok(student);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
         }
     }
 
