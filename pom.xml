@@ -153,6 +153,14 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.14</version>
+				<configuration>
+					<excludes>
+						<exclude>com/openclassrooms/etudiant/dto/*</exclude>
+						<exclude>com/openclassrooms/etudiant/entities/*</exclude>
+						<exclude>com/openclassrooms/etudiant/mapper/*</exclude>
+						<exclude>com/openclassrooms/etudiant/handler/*</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
