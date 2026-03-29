@@ -2,6 +2,7 @@ package com.openclassrooms.etudiant.service;
 
 import com.openclassrooms.etudiant.dto.StudentDTO;
 import com.openclassrooms.etudiant.entities.Student;
+import com.openclassrooms.etudiant.entities.User;
 import com.openclassrooms.etudiant.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -56,6 +57,10 @@ public class StudentService {
         Assert.notNull(student.getEmail(), "Email must not be null");
         Assert.notNull(student.getBirthDate(), "Birthdate must not be null");
 
+        boolean isExistByEmail = studentRepository.existsByEmail(student.getEmail());
+        if (isExistByEmail) {
+            throw new IllegalArgumentException("User with email " + student.getEmail() + " already exists");
+        }
         studentRepository.save(student);
     }
 

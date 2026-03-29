@@ -28,11 +28,13 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtService jwtService;
     @InjectMocks
     private UserService userService;
 
     @Test
-    public void test_create_null_user_throws_IllegalArgumentException() {
+    public void test_create_throws_IllegalArgumentException_when_user_is_null() {
         // GIVEN
 
         // THEN
@@ -41,7 +43,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void test_create_already_exist_user_throws_IllegalArgumentException() {
+    public void test_create_throws_IllegalArgumentException_when_user_already_exists() {
         // GIVEN
         User user = new User();
         user.setFirstName(FIRST_NAME);
@@ -74,5 +76,82 @@ public class UserServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue()).isEqualTo(user);
+    }
+
+    @Test
+    public void test_create_user_password_is_correctly_encoded() {
+        // GIVEN
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+
+        when(userRepository.findByLogin(any())).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(PASSWORD)).thenReturn("encodedPassword");
+
+        // WHEN
+        userService.register(user);
+
+        // THEN
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(captor.capture());
+
+        assertThat(captor.getValue().getPassword()).isEqualTo("encodedPassword");
+    }
+
+    @Test
+    public void test_login_success_returns_token() {
+
+        // GIVEN
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, "encodedPassword")).thenReturn(true);
+        when(jwtService.generateToken(any())).thenReturn("token");
+
+        // WHEN
+        String token = userService.login(LOGIN, PASSWORD);
+
+        // THEN
+        assertThat(token).isEqualTo("token");
+    }
+
+    @Test
+    public void test_login_throw_IllegalArgumentException_when_user_is_not_found() {
+
+        // GIVEN
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.empty());
+
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
+    }
+
+    @Test
+    public void test_login_throws_IllegalArgumentException_when_password_is_wrong() {
+        // GIVEN
+        User user = new User();
+        user.setLogin(LOGIN);
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(PASSWORD, "encodedPassword")).thenReturn(false);
+
+        // THEN
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, PASSWORD));
+    }
+
+    @Test
+    public void test_login_throws_IllegalArgumentException_when_login_is_null() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(null, PASSWORD));
+    }
+
+    @Test
+    public void test_login_throws_IllegalArgumentException_when_password_is_null() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, null));
     }
 }
