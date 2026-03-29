@@ -31,7 +31,7 @@ public class StudentController {
         try {
             StudentDTO student = studentService.findById(id);
             return ResponseEntity.ok(student);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -70,7 +70,13 @@ public class StudentController {
 
     @DeleteMapping("/api/students/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        studentService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        try {
+            StudentDTO student = studentService.findById(id);
+            studentService.delete(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

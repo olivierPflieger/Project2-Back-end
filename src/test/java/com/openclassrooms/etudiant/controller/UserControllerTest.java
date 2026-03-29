@@ -116,4 +116,78 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
+
+    @Test
+    public void loginSuccessful() throws Exception {
+        // GIVEN
+        User user = new User();
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        userService.register(user);
+
+        String requestBody = """
+        {
+            "login": "%s",
+            "password": "%s"
+        }
+        """.formatted(LOGIN, PASSWORD);
+
+        // WHEN + THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").exists());
+    }
+
+    @Test
+    public void loginWrongPassword() throws Exception {
+        // GIVEN
+        User user = new User();
+        user.setFirstName(FIRST_NAME);
+        user.setLastName(LAST_NAME);
+        user.setLogin(LOGIN);
+        user.setPassword(PASSWORD);
+        userService.register(user);
+
+        String requestBody = """
+        {
+            "login": "%s",
+            "password": "wrongPassword"
+        }
+        """.formatted(LOGIN);
+
+        // WHEN + THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string("Login or password incorrect"));
+    }
+
+    @Test
+    public void loginUserNotFound() throws Exception {
+        // GIVEN
+        String requestBody = """
+        {
+            "login": "unknown",
+            "password": "password"
+        }
+        """;
+
+        // WHEN + THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isForbidden())
+                .andExpect(MockMvcResultMatchers.content().string("Login or password incorrect"));
+    }
 }

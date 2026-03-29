@@ -38,13 +38,13 @@ class StudentServiceTest {
     // =========================
 
     private Student buildStudent() {
-        Student s = new Student();
-        s.setId(1L);
-        s.setFirstName("John");
-        s.setLastName("Doe");
-        s.setEmail("john@doe.com");
-        s.setBirthDate(LocalDate.of(2000, 1, 1));
-        return s;
+        Student student = new Student();
+        student.setId(1L);
+        student.setFirstName("John");
+        student.setLastName("Doe");
+        student.setEmail("john@doe.com");
+        student.setBirthDate(LocalDate.of(2000, 1, 1));
+        return student;
     }
 
     private static Stream<Consumer<Student>> invalidStudentsProvider() {
@@ -117,6 +117,7 @@ class StudentServiceTest {
 
         // GIVEN
         Student student = buildStudent();
+        when(studentRepository.existsByEmail(student.getEmail())).thenReturn(false);
 
         // WHEN
         studentService.create(student);
@@ -194,15 +195,15 @@ class StudentServiceTest {
     }
 
     @Test
-    void test_Update_throw_EntityNotFoundException_when_student_is_notFound() {
+    void test_update_throw_EntityNotFoundException_when_student_is_notFound() {
 
         // GIVEN
+        Student student = buildStudent();
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
 
         // THEN
-        assertThatThrownBy(() -> studentService.update(1L, buildStudent()))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("Student not found");
+        Assertions.assertThrows(EntityNotFoundException.class,
+                () -> studentService.update(1L, student));
     }
 
     // =========================
@@ -212,11 +213,29 @@ class StudentServiceTest {
     @Test
     void test_delete_student() {
 
+        // GIVEN
+        Long studentId = 1L;
+        Student student = buildStudent();
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
+
         // WHEN
-        studentService.delete(1L);
+        studentService.delete(studentId);
 
         // THEN
-        verify(studentRepository).deleteById(1L);
+        verify(studentRepository).deleteById(studentId);
+    }
+
+    @Test
+    void test_delete_throw_EntityNotFoundException_when_student_is_notFound() {
+
+        // GIVEN
+        Student student = buildStudent();
+        when(studentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // THEN
+        assertThatThrownBy(() -> studentService.delete(1L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Student not found");
     }
 
     @Test

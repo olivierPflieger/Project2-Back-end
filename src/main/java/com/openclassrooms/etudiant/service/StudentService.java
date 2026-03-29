@@ -83,6 +83,10 @@ public class StudentService {
 
     public void delete(Long id) {
         Assert.notNull(id, "id must not be null");
+
+        Student studentToDelete = studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found"));
+
         studentRepository.deleteById(id);
     }
 }
