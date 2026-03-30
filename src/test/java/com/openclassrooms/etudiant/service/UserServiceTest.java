@@ -33,6 +33,10 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    // =========================
+    // REGISTER USER
+    // =========================
+
     @Test
     public void test_create_throws_IllegalArgumentException_when_user_is_null() {
         // GIVEN
@@ -98,6 +102,10 @@ public class UserServiceTest {
         assertThat(captor.getValue().getPassword()).isEqualTo("encodedPassword");
     }
 
+    // =========================
+    // LOGIN
+    // =========================
+
     @Test
     public void test_login_success_returns_token() {
 
@@ -118,7 +126,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void test_login_throw_IllegalArgumentException_when_user_is_not_found() {
+    public void test_login_throw_IllegalArgumentException_when_user_is_wrong() {
 
         // GIVEN
         when(userRepository.findByLogin(LOGIN)).thenReturn(Optional.empty());
@@ -150,8 +158,20 @@ public class UserServiceTest {
     }
 
     @Test
+    public void test_login_throws_IllegalArgumentException_when_login_is_empty() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login("", PASSWORD));
+    }
+
+    @Test
     public void test_login_throws_IllegalArgumentException_when_password_is_null() {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> userService.login(LOGIN, null));
+    }
+
+    @Test
+    public void test_login_throws_IllegalArgumentException_when_password_is_empty() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> userService.login(LOGIN, ""));
     }
 }

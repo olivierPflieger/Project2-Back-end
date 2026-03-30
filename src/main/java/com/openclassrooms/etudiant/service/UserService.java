@@ -22,21 +22,27 @@ public class UserService {
     private final JwtService jwtService;
 
     public void register(User user) {
+
         Assert.notNull(user, "User must not be null");
-        log.info("Registering new user");
 
         Optional<User> optionalUser = userRepository.findByLogin(user.getLogin());
         if (optionalUser.isPresent()) {
             throw new IllegalArgumentException("User with login " + user.getLogin() + " already exists");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
     public String login(String login, String password) {
+
         Assert.notNull(login, "Login must not be null");
+        Assert.hasText(login, "Login must not be empty");
         Assert.notNull(password, "Password must not be null");
+        Assert.hasText(password, "Password must not be empty");
+
         Optional<User> user = userRepository.findByLogin(login);
+
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
             UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
                     .username(login)
@@ -45,7 +51,7 @@ public class UserService {
                     .build();
             return jwtService.generateToken(userDetails);
         } else {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new IllegalArgumentException("Login or password incorrect");
         }
     }
 }

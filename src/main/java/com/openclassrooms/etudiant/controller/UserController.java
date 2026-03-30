@@ -32,12 +32,7 @@ public class UserController {
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
 
-        try {
-            String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
-            return ResponseEntity.ok(Map.of("token", jwtToken));
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Login or password incorrect");
-        }
+        String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
+        return ResponseEntity.ok(Map.of("token", jwtToken));
     }
 }

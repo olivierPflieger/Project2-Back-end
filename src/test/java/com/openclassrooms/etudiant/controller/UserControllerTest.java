@@ -167,8 +167,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Login or password incorrect"));
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -187,7 +186,44 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andExpect(MockMvcResultMatchers.content().string("Login or password incorrect"));
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void loginUserEmpty() throws Exception {
+        // GIVEN
+        String requestBody = """
+        {
+            "login": "",
+            "password": "password"
+        }
+        """;
+
+        // WHEN + THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void loginPasswordEmpty() throws Exception {
+        // GIVEN
+        String requestBody = """
+        {
+            "login": "john",
+            "password": ""
+        }
+        """;
+
+        // WHEN + THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 }

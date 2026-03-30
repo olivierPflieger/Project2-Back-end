@@ -151,7 +151,7 @@ public class StudentControllerTest {
     }
 
     // --------------------------------------
-    // FIND
+    // FIND BY ID
     // --------------------------------------
 
     @Test
