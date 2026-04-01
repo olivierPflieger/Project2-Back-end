@@ -115,6 +115,9 @@ Pour exécuter les tests Junit, il faut :
 mvn clean test
 ```
 
+## Rapport de couverture de code
+    - Le rapport est généré dans ..\Project2-Back-end\target\site\jacoco
+
 ## Fonctionnalités portées
 
     - API de création d'un utilisateur (agent de la bibliothèque)
